@@ -66,14 +66,18 @@ const App: React.FC = () => {
     tailwindScript.src = 'https://cdn.tailwindcss.com';
     document.head.appendChild(tailwindScript);
 
-    const titleElement = document.createElement('title');
-    titleElement.textContent = 'Selamat Datang di KUMAGEMA';
-    document.head.appendChild(titleElement);
+    // LOGIC PERBAIKAN TITLE DAN FAVICON
+    // 1. Set Title (langsung menimpa elemen title yang ada)
+    document.title = 'Selamat Datang di KUMAGEMA';
 
-    const faviconLink = document.createElement('link');
-    faviconLink.rel = 'icon';
+    // 2. Set Favicon (mencari atau membuat link icon)
+    let faviconLink = document.querySelector<HTMLLinkElement>("link[rel='icon']");
+    if (!faviconLink) {
+        faviconLink = document.createElement('link');
+        faviconLink.rel = 'icon';
+        document.head.appendChild(faviconLink);
+    }
     faviconLink.href = COMPANY_LOGO_URL;
-    document.head.appendChild(faviconLink);
 
     tailwindScript.onload = () => {
         const configScript = document.createElement('script');

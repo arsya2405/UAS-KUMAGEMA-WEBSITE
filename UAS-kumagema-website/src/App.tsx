@@ -66,6 +66,15 @@ const App: React.FC = () => {
     tailwindScript.src = 'https://cdn.tailwindcss.com';
     document.head.appendChild(tailwindScript);
 
+    const titleElement = document.createElement('title');
+    titleElement.textContent = 'Selamat Datang di KUMAGEMA';
+    document.head.appendChild(titleElement);
+
+    const faviconLink = document.createElement('link');
+    faviconLink.rel = 'icon';
+    faviconLink.href = COMPANY_LOGO_URL;
+    document.head.appendChild(faviconLink);
+
     tailwindScript.onload = () => {
         const configScript = document.createElement('script');
         configScript.innerHTML = `
@@ -257,7 +266,6 @@ const App: React.FC = () => {
     );
   });
 
-  // GameCatalog DIUBAH untuk tidak menerima searchTerm/setSearchTerm
   const GameCatalog = () => <InnerGameCatalog games={games} isLoading={isLoading} error={error} />;
 
   const HomeGameCard: React.FC<{ game: Game }> = ({ game }) => (
@@ -276,8 +284,6 @@ const App: React.FC = () => {
       </div>
       <div className="p-4 text-center space-y-3"> 
         <h3 className="text-xl font-bold text-kuma-light truncate">{game.title}</h3>
-        
-        {/* PERUBAHAN: Menghapus div genre tags */}
         
         <button
           onClick={() => console.log(`Attempting to view ${game.title}`)} 
@@ -305,7 +311,6 @@ const App: React.FC = () => {
       </div>
       <div className="p-6 space-y-4">
         <h3 className="2xl font-bold text-kuma-light">{game.title}</h3>
-        {/* Menampilkan semua genre dalam array */}
         <div className="flex flex-wrap gap-2">
             {game.genre.map((g, index) => (
                 <span key={index} className="inline-block bg-gray-700 text-gray-200 text-xs font-semibold px-3 py-1 rounded-full">

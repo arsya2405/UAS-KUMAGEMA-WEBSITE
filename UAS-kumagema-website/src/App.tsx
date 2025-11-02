@@ -33,27 +33,24 @@ const formatPrice = (price: number): string => {
 
 
 const App: React.FC = () => {
-  // Mengganti state untuk halaman dengan logic berbasis URL
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
   const [games, setGames] = useState<Game[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isReady, setIsReady] = useState(false); 
+  const [searchTerm, setSearchTerm] = useState(''); // State baru untuk search
 
-  // Fungsi untuk mengubah halaman (menggunakan History API)
   const navigate = useCallback((path: '/home' | '/games') => {
     window.history.pushState(null, '', path);
     setCurrentPath(path);
   }, []);
 
-  // Efek untuk menangani tombol kembali/maju browser
   useEffect(() => {
     const handlePopState = () => {
       setCurrentPath(window.location.pathname);
     };
     window.addEventListener('popstate', handlePopState);
 
-    // Inisialisasi: Pastikan URL awal diperbaiki
     if (currentPath === '/') {
         navigate('/home');
     }
@@ -64,7 +61,6 @@ const App: React.FC = () => {
   }, [currentPath, navigate]);
 
 
-  // --- Memasukkan Script Tailwind CDN dan Konfigurasi di Mount ---
   useEffect(() => {
     const tailwindScript = document.createElement('script');
     tailwindScript.src = 'https://cdn.tailwindcss.com';
@@ -125,7 +121,6 @@ const App: React.FC = () => {
     }
   }, []);
 
-  // Menjalankan fetch berdasarkan path saat ini
   useEffect(() => {
     const isGamesPath = currentPath === '/games';
     const isHomePath = currentPath === '/home';
@@ -172,7 +167,7 @@ const App: React.FC = () => {
             </div>
             <div className="flex justify-center pt-8">
               <button
-                onClick={() => navigate('/games')} // Menggunakan fungsi navigate
+                onClick={() => navigate('/games')} 
                 className="px-8 py-3 bg-kuma-accent-cta text-kuma-dark text-lg font-bold rounded-full shadow-lg hover:bg-kuma-accent-cta-hover transition duration-300 transform hover:scale-105"
               >
                 Lihat Semua Game Lain
@@ -184,7 +179,7 @@ const App: React.FC = () => {
         {recentGames.length === 0 && !isLoading && !error && (
             <div className="flex justify-center pt-4">
                 <button
-                    onClick={() => navigate('/games')} // Menggunakan fungsi navigate
+                    onClick={() => navigate('/games')} 
                     className="px-8 py-3 bg-kuma-accent-cta text-kuma-dark text-lg font-bold rounded-full shadow-lg hover:bg-kuma-accent-cta-hover transition duration-300 transform hover:scale-105"
                 >
                     Lihat Katalog Game
@@ -201,7 +196,7 @@ const App: React.FC = () => {
                 <p>Memuat game terbaru...</p>
             </div>
         )}
-        {error && currentPath === '/home' && ( // Menyesuaikan kondisi error dengan path
+        {error && currentPath === '/home' && ( 
             <div className="p-4 bg-red-800/50 border border-red-500 rounded-lg text-white text-center">
                 <p>{error}</p>
             </div>
@@ -211,6 +206,12 @@ const App: React.FC = () => {
   };
 
   const GameCatalog: React.FC = () => {
+    // Logic filtering berdasarkan searchTerm
+    const filteredGames = games.filter(game =>
+        game.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        game.genre.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     if (isLoading) {
       return (
         <div className="text-center p-10 text-kuma-light">
@@ -232,23 +233,47 @@ const App: React.FC = () => {
         </div>
       );
     }
-
-    if (games.length === 0) {
-      return (
-        <div className="text-center p-10 text-gray-400 max-w-md mx-auto">
-          <h3 className="text-2xl font-bold mb-3">Katalog Kosong</h3>
-          <p>Database kosong atau server mengembalikan array kosong. Silakan isi data menggunakan `npm run studio` di terminal backend Anda.</p>
-        </div>
-      );
-    }
-
+    
     return (
       <div className="p-4 md:p-8">
         <h2 className="text-4xl font-bold mb-8 text-kuma-light text-center">
           Katalog Game KUMAGEMA
         </h2>
+
+        {/* Search Bar */}
+        <div className="max-w-xl mx-auto mb-10">
+            <div className="relative">
+                <input
+                    type="text"
+                    placeholder="Cari berdasarkan nama atau genre..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full px-5 py-3 text-kuma-light bg-gray-900 border border-gray-700 rounded-xl shadow-inner focus:ring-kuma-accent-cta focus:border-kuma-accent-cta outline-none transition duration-150"
+                />
+                <svg className="w-5 h-5 text-gray-500 absolute right-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+        </div>
+
+        {/* Display Filtered Results */}
+        {filteredGames.length === 0 && games.length > 0 && (
+            <div className="text-center p-10 text-gray-400 max-w-md mx-auto">
+                <h3 className="text-2xl font-bold mb-3">Tidak Ada Game Ditemukan</h3>
+                <p>Coba kata kunci lain atau periksa ejaan Anda.</p>
+            </div>
+        )}
+        
+        {games.length === 0 && !isLoading && !error && (
+            <div className="text-center p-10 text-gray-400 max-w-md mx-auto">
+                <h3 className="text-2xl font-bold mb-3">Katalog Kosong</h3>
+                <p>Database kosong. Silakan isi data menggunakan `npm run studio` di terminal backend Anda.</p>
+            </div>
+        )}
+
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-          {games.map((game) => (
+          {filteredGames.map((game) => (
             <GameCard key={game.id} game={game} />
           ))}
         </div>
@@ -312,14 +337,13 @@ const App: React.FC = () => {
   
 
   const renderPage = () => {
-    // Menentukan halaman berdasarkan Path
     switch (currentPath) {
       case '/home':
         return <HomePage />;
       case '/games':
         return <GameCatalog />;
       default:
-        return <HomePage />; // Default ke Home jika path tidak dikenal
+        return <HomePage />; 
     }
   };
   
@@ -368,7 +392,7 @@ const App: React.FC = () => {
             </div>
             <div className="space-x-4">
               <button
-                onClick={() => navigate('/home')} // Menggunakan navigate
+                onClick={() => navigate('/home')} 
                 className={`font-semibold transition duration-150 ${
                   currentPath === '/home' ? 'text-kuma-accent-cta border-b-2 border-kuma-accent-cta' : 'text-gray-300 hover:text-kuma-accent-cta'
                 }`}
@@ -376,7 +400,7 @@ const App: React.FC = () => {
                 Beranda
               </button>
               <button
-                onClick={() => navigate('/games')} // Menggunakan navigate
+                onClick={() => navigate('/games')} 
                 className={`font-semibold transition duration-150 ${
                   currentPath === '/games' ? 'text-kuma-accent-cta border-b-2 border-kuma-accent-cta' : 'text-gray-300 hover:text-kuma-accent-cta'
                 }`}

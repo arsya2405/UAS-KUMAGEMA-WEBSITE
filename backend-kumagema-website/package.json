@@ -1,0 +1,26 @@
+{
+  "name": "uas-v2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "migrate:dev": "dotenv -e .env -- npx prisma migrate dev",
+    "studio": "dotenv -e .env -- npx prisma studio",
+    "generate": "dotenv -e .env -- npx prisma generate"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^6.18.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "dotenv-cli": "^11.0.0",
+    "prisma": "^6.18.0"
+  }
+}

@@ -276,14 +276,9 @@ const App: React.FC = () => {
       </div>
       <div className="p-4 text-center space-y-3"> 
         <h3 className="text-xl font-bold text-kuma-light truncate">{game.title}</h3>
-        {/* PERUBAHAN: Menampilkan semua genre dalam array */}
-        <div className="flex justify-center flex-wrap gap-2 text-sm">
-            {game.genre.map((g, index) => (
-                <span key={index} className="inline-block bg-gray-700 text-gray-200 text-xs font-semibold px-2 py-0.5 rounded-full">
-                    {g}
-                </span>
-            ))}
-        </div>
+        
+        {/* PERUBAHAN: Menghapus div genre tags */}
+        
         <button
           onClick={() => console.log(`Attempting to view ${game.title}`)} 
           className="w-full px-4 py-2 bg-kuma-accent-cta text-kuma-dark font-semibold rounded-lg shadow-md hover:bg-kuma-accent-cta-hover transition duration-200 text-sm"
@@ -310,7 +305,7 @@ const App: React.FC = () => {
       </div>
       <div className="p-6 space-y-4">
         <h3 className="2xl font-bold text-kuma-light">{game.title}</h3>
-        {/* PERUBAHAN: Menampilkan semua genre dalam array */}
+        {/* Menampilkan semua genre dalam array */}
         <div className="flex flex-wrap gap-2">
             {game.genre.map((g, index) => (
                 <span key={index} className="inline-block bg-gray-700 text-gray-200 text-xs font-semibold px-3 py-1 rounded-full">

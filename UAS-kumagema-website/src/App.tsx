@@ -311,8 +311,14 @@ const App: React.FC = () => {
           }}
         />
       </div>
-      <div className="p-4 text-center">
+      <div className="p-4 text-center space-y-3"> 
         <h3 className="text-xl font-bold text-kuma-light truncate">{game.title}</h3>
+        <button
+          onClick={() => console.log(`Attempting to view ${game.title}`)} 
+          className="w-full px-4 py-2 bg-kuma-accent-cta text-kuma-dark font-semibold rounded-lg shadow-md hover:bg-kuma-accent-cta-hover transition duration-200 text-sm"
+        >
+          View
+        </button>
       </div>
     </div>
   );
@@ -333,8 +339,12 @@ const App: React.FC = () => {
       </div>
       <div className="p-6 space-y-4">
         <h3 className="2xl font-bold text-kuma-light">{game.title}</h3>
-        <span className="inline-block bg-gray-700 text-gray-200 text-xs font-semibold px-3 py-1 rounded-full">{game.genre}</span>
-        <p className="text-gray-400 text-sm line-clamp-3">{game.description}</p>
+        <span className="inline-block bg-gray-700 text-gray-200 text-xs font-semibold px-3 py-1 rounded-full">
+          {game.genre}
+        </span>
+        <p className="text-gray-400 text-sm line-clamp-3">
+          {game.description}
+        </p>
         
         <div className="flex items-center justify-between pt-2 border-t border-gray-700 mt-4">
           <span className={`text-3xl font-extrabold ${game.price > 0 ? 'text-kuma-accent-cta' : 'text-green-500'}`}>

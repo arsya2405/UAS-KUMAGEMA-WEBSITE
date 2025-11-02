@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 interface Game {
   id: string;
   title: string;
-  genre: string;
+  genre: string[];
   price: number;
   description: string;
   imageUrl?: string; 
@@ -38,12 +38,10 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isReady, setIsReady] = useState(false); 
-  // State searchTerm DIHAPUS
 
   const navigate = useCallback((path: '/home' | '/games') => {
     window.history.pushState(null, '', path);
     setCurrentPath(path);
-    // setSearchTermState('') DIHAPUS
   }, []); 
 
 
@@ -210,10 +208,8 @@ const App: React.FC = () => {
   const HomePage = () => <InnerHomePage games={games} isLoading={isLoading} error={error} navigate={navigate} />;
 
 
-  // InnerGameCatalog DIUBAH untuk tidak menerima searchTerm/setSearchTerm
   const InnerGameCatalog: React.FC<{ games: Game[], isLoading: boolean, error: string | null }> = React.memo(({ games, isLoading, error }) => {
     
-    // Logika filtering dihilangkan, langsung menggunakan games
     const displayedGames = games; 
 
     if (isLoading) {
@@ -244,9 +240,6 @@ const App: React.FC = () => {
           Katalog Game KUMAGEMA
         </h2>
 
-        {/* SearchBar Component DIHAPUS */}
-
-        {/* Display Filtered Results DIUBAH */}
         {displayedGames.length === 0 && (
             <div className="text-center p-10 text-gray-400 max-w-md mx-auto">
                 <h3 className="2xl font-bold mb-3">Katalog Kosong</h3>
@@ -283,6 +276,14 @@ const App: React.FC = () => {
       </div>
       <div className="p-4 text-center space-y-3"> 
         <h3 className="text-xl font-bold text-kuma-light truncate">{game.title}</h3>
+        {/* PERUBAHAN: Menampilkan semua genre dalam array */}
+        <div className="flex justify-center flex-wrap gap-2 text-sm">
+            {game.genre.map((g, index) => (
+                <span key={index} className="inline-block bg-gray-700 text-gray-200 text-xs font-semibold px-2 py-0.5 rounded-full">
+                    {g}
+                </span>
+            ))}
+        </div>
         <button
           onClick={() => console.log(`Attempting to view ${game.title}`)} 
           className="w-full px-4 py-2 bg-kuma-accent-cta text-kuma-dark font-semibold rounded-lg shadow-md hover:bg-kuma-accent-cta-hover transition duration-200 text-sm"
@@ -309,9 +310,15 @@ const App: React.FC = () => {
       </div>
       <div className="p-6 space-y-4">
         <h3 className="2xl font-bold text-kuma-light">{game.title}</h3>
-        <span className="inline-block bg-gray-700 text-gray-200 text-xs font-semibold px-3 py-1 rounded-full">
-          {game.genre}
-        </span>
+        {/* PERUBAHAN: Menampilkan semua genre dalam array */}
+        <div className="flex flex-wrap gap-2">
+            {game.genre.map((g, index) => (
+                <span key={index} className="inline-block bg-gray-700 text-gray-200 text-xs font-semibold px-3 py-1 rounded-full">
+                    {g}
+                </span>
+            ))}
+        </div>
+        
         <p className="text-gray-400 text-sm line-clamp-3">
           {game.description}
         </p>

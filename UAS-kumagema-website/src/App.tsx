@@ -33,12 +33,38 @@ const formatPrice = (price: number): string => {
 
 
 const App: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState<'home' | 'games'>('home');
+  // Mengganti state untuk halaman dengan logic berbasis URL
+  const [currentPath, setCurrentPath] = useState(window.location.pathname);
   const [games, setGames] = useState<Game[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isReady, setIsReady] = useState(false); 
 
+  // Fungsi untuk mengubah halaman (menggunakan History API)
+  const navigate = useCallback((path: '/home' | '/games') => {
+    window.history.pushState(null, '', path);
+    setCurrentPath(path);
+  }, []);
+
+  // Efek untuk menangani tombol kembali/maju browser
+  useEffect(() => {
+    const handlePopState = () => {
+      setCurrentPath(window.location.pathname);
+    };
+    window.addEventListener('popstate', handlePopState);
+
+    // Inisialisasi: Pastikan URL awal diperbaiki
+    if (currentPath === '/') {
+        navigate('/home');
+    }
+    
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [currentPath, navigate]);
+
+
+  // --- Memasukkan Script Tailwind CDN dan Konfigurasi di Mount ---
   useEffect(() => {
     const tailwindScript = document.createElement('script');
     tailwindScript.src = 'https://cdn.tailwindcss.com';
@@ -99,11 +125,15 @@ const App: React.FC = () => {
     }
   }, []);
 
+  // Menjalankan fetch berdasarkan path saat ini
   useEffect(() => {
-    if (currentPage === 'games' || (currentPage === 'home' && games.length === 0)) {
+    const isGamesPath = currentPath === '/games';
+    const isHomePath = currentPath === '/home';
+
+    if (isGamesPath || (isHomePath && games.length === 0)) {
         fetchGames();
     }
-  }, [currentPage, fetchGames, games.length]);
+  }, [currentPath, fetchGames, games.length]);
 
 
   const HomePage: React.FC = () => {
@@ -142,7 +172,7 @@ const App: React.FC = () => {
             </div>
             <div className="flex justify-center pt-8">
               <button
-                onClick={() => setCurrentPage('games')}
+                onClick={() => navigate('/games')} // Menggunakan fungsi navigate
                 className="px-8 py-3 bg-kuma-accent-cta text-kuma-dark text-lg font-bold rounded-full shadow-lg hover:bg-kuma-accent-cta-hover transition duration-300 transform hover:scale-105"
               >
                 Lihat Semua Game Lain
@@ -154,7 +184,7 @@ const App: React.FC = () => {
         {recentGames.length === 0 && !isLoading && !error && (
             <div className="flex justify-center pt-4">
                 <button
-                    onClick={() => setCurrentPage('games')}
+                    onClick={() => navigate('/games')} // Menggunakan fungsi navigate
                     className="px-8 py-3 bg-kuma-accent-cta text-kuma-dark text-lg font-bold rounded-full shadow-lg hover:bg-kuma-accent-cta-hover transition duration-300 transform hover:scale-105"
                 >
                     Lihat Katalog Game
@@ -171,7 +201,7 @@ const App: React.FC = () => {
                 <p>Memuat game terbaru...</p>
             </div>
         )}
-        {error && currentPage === 'home' && (
+        {error && currentPath === '/home' && ( // Menyesuaikan kondisi error dengan path
             <div className="p-4 bg-red-800/50 border border-red-500 rounded-lg text-white text-center">
                 <p>{error}</p>
             </div>
@@ -282,13 +312,14 @@ const App: React.FC = () => {
   
 
   const renderPage = () => {
-    switch (currentPage) {
-      case 'home':
+    // Menentukan halaman berdasarkan Path
+    switch (currentPath) {
+      case '/home':
         return <HomePage />;
-      case 'games':
+      case '/games':
         return <GameCatalog />;
       default:
-        return <HomePage />;
+        return <HomePage />; // Default ke Home jika path tidak dikenal
     }
   };
   
@@ -337,17 +368,17 @@ const App: React.FC = () => {
             </div>
             <div className="space-x-4">
               <button
-                onClick={() => setCurrentPage('home')}
+                onClick={() => navigate('/home')} // Menggunakan navigate
                 className={`font-semibold transition duration-150 ${
-                  currentPage === 'home' ? 'text-kuma-accent-cta border-b-2 border-kuma-accent-cta' : 'text-gray-300 hover:text-kuma-accent-cta'
+                  currentPath === '/home' ? 'text-kuma-accent-cta border-b-2 border-kuma-accent-cta' : 'text-gray-300 hover:text-kuma-accent-cta'
                 }`}
               >
                 Beranda
               </button>
               <button
-                onClick={() => setCurrentPage('games')}
+                onClick={() => navigate('/games')} // Menggunakan navigate
                 className={`font-semibold transition duration-150 ${
-                  currentPage === 'games' ? 'text-kuma-accent-cta border-b-2 border-kuma-accent-cta' : 'text-gray-300 hover:text-kuma-accent-cta'
+                  currentPath === '/games' ? 'text-kuma-accent-cta border-b-2 border-kuma-accent-cta' : 'text-gray-300 hover:text-kuma-accent-cta'
                 }`}
               >
                 Games

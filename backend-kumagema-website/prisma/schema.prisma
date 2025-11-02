@@ -16,7 +16,7 @@ datasource db {
 model Game {
   id          String   @id @default(uuid())
   title       String   @unique
-  genre       String
+  genre       String[]
   price       Float
   description String
   imageUrl    String?

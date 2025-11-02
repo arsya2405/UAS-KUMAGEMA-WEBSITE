@@ -32,19 +32,41 @@ const formatPrice = (price: number): string => {
 };
 
 
+const SearchBar: React.FC<{ searchTerm: string, setSearchTerm: React.Dispatch<React.SetStateAction<string>> }> = React.memo(({ searchTerm, setSearchTerm }) => (
+    <div className="max-w-xl mx-auto mb-10">
+        <div className="relative">
+            <input
+                type="text"
+                placeholder="Cari berdasarkan nama atau genre..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-5 py-3 text-kuma-light bg-gray-900 border border-gray-700 rounded-xl shadow-inner focus:ring-kuma-accent-cta focus:border-kuma-accent-cta outline-none transition duration-150"
+            />
+            <svg className="w-5 h-5 text-gray-500 absolute right-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+        </div>
+    </div>
+));
+
+
 const App: React.FC = () => {
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
   const [games, setGames] = useState<Game[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isReady, setIsReady] = useState(false); 
-  // [searchTerm, setSearchTermState] dan setSearchTerm DIHAPUS
+  const [searchTerm, setSearchTermState] = useState(''); 
+
+  const setSearchTerm = useCallback((term: string) => {
+    setSearchTermState(term);
+  }, []); 
 
   const navigate = useCallback((path: '/home' | '/games') => {
     window.history.pushState(null, '', path);
     setCurrentPath(path);
-    // setSearchTermState(''); // Dihapus karena state tidak ada
-  }, []); 
+    setSearchTermState(''); 
+  }, [setSearchTermState]); 
 
 
   useEffect(() => {
@@ -210,11 +232,14 @@ const App: React.FC = () => {
   const HomePage = () => <InnerHomePage games={games} isLoading={isLoading} error={error} navigate={navigate} />;
 
 
-  // InnerGameCatalog DIUBAH untuk tidak menerima searchTerm/setSearchTerm
-  const InnerGameCatalog: React.FC<{ games: Game[], isLoading: boolean, error: string | null }> = React.memo(({ games, isLoading, error }) => {
+  const InnerGameCatalog: React.FC<{ games: Game[], isLoading: boolean, error: string | null, searchTerm: string, setSearchTerm: (term: string) => void }> = React.memo(({ games, isLoading, error, searchTerm, setSearchTerm }) => {
     
-    // Logika filtering dihilangkan
-    const displayedGames = games; 
+    const filteredGames = useMemo(() => {
+      return games.filter(game =>
+          game.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          game.genre.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }, [games, searchTerm]); 
 
     if (isLoading) {
       return (
@@ -244,10 +269,16 @@ const App: React.FC = () => {
           Katalog Game KUMAGEMA
         </h2>
 
-        {/* SearchBar Component DIHAPUS */}
+        <SearchBar key="game-search-input" searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
-        {/* Display Filtered Results DIUBAH */}
-        {displayedGames.length === 0 && (
+        {filteredGames.length === 0 && games.length > 0 && (
+            <div className="text-center p-10 text-gray-400 max-w-md mx-auto">
+                <h3 className="text-2xl font-bold mb-3">Tidak Ada Game Ditemukan</h3>
+                <p>Coba kata kunci lain atau periksa ejaan Anda.</p>
+            </div>
+        )}
+        
+        {games.length === 0 && !isLoading && !error && (
             <div className="text-center p-10 text-gray-400 max-w-md mx-auto">
                 <h3 className="2xl font-bold mb-3">Katalog Kosong</h3>
                 <p>Database kosong. Silakan isi data menggunakan `npm run studio` di terminal backend Anda.</p>
@@ -256,7 +287,7 @@ const App: React.FC = () => {
 
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-          {displayedGames.map((game) => (
+          {filteredGames.map((game) => (
             <GameCard key={game.id} game={game} />
           ))}
         </div>
@@ -264,11 +295,10 @@ const App: React.FC = () => {
     );
   });
 
-  // GameCatalog DIUBAH untuk tidak menerima searchTerm/setSearchTerm
-  const GameCatalog = () => <InnerGameCatalog games={games} isLoading={isLoading} error={error} />;
+  const GameCatalog = () => <InnerGameCatalog games={games} isLoading={isLoading} error={error} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />;
 
   const HomeGameCard: React.FC<{ game: Game }> = ({ game }) => (
-    <div className="bg-black rounded-xl shadow-lg overflow-hidden transition duration-300 hover:shadow-kuma-accent-cta/50 hover:scale-[1.05] cursor-pointer border border-gray-700"> 
+    <div className="bg-black rounded-xl shadow-lg overflow-hidden transition duration-300 border border-gray-700"> 
       <div className="h-40 overflow-hidden">
         <img
           src={game.imageUrl || 'https://placehold.co/600x400/374151/ffffff?text=KUMAGEMA'}
@@ -288,7 +318,7 @@ const App: React.FC = () => {
   );
 
   const GameCard: React.FC<{ game: Game }> = ({ game }) => (
-    <div className="bg-black rounded-xl shadow-lg overflow-hidden transition duration-300 hover:shadow-kuma-accent-cta/50 hover:scale-[1.02] border border-gray-700"> 
+    <div className="bg-black rounded-xl shadow-lg overflow-hidden transition duration-300 border border-gray-700"> 
       <div className="h-48 overflow-hidden">
         <img
           src={game.imageUrl || 'https://placehold.co/600x400/374155/ffffff?text=KUMAGEMA'}
@@ -311,10 +341,10 @@ const App: React.FC = () => {
             {formatPrice(game.price)}
           </span>
           <button
-            onClick={() => console.log(`Attempting to buy ${game.title}`)} 
+            onClick={() => console.log(`Attempting to view ${game.title}`)} 
             className="px-4 py-2 bg-kuma-accent-cta text-kuma-dark font-semibold rounded-lg shadow-md hover:bg-kuma-accent-cta-hover transition duration-200"
           >
-            {game.price > 0 ? 'Beli Sekarang' : 'Dapatkan'}
+            View
           </button>
         </div>
       </div>

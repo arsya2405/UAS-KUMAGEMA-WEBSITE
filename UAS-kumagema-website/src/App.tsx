@@ -309,9 +309,18 @@ const App: React.FC = () => {
   // Jika styling belum dimuat, tampilkan loader yang sangat sederhana
   if (!isReady) {
     return (
+      // MENGGUNAKAN INLINE STYLE CSS MURNI UNTUK MENJAMIN CENTERING DI VIEWPORT
       <div 
-        style={{ backgroundColor: '#1a1a1a', width: '100%', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }} 
-        className="text-kuma-accent-cta text-2xl"
+        style={{ 
+          backgroundColor: '#1a1a1a', 
+          width: '100vw', // Menggunakan Viewport Width
+          height: '100vh', // Menggunakan Viewport Height
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          color: '#eab308', 
+          fontSize: '24px' 
+        }} 
       >
         Memuat Tampilan...
       </div>

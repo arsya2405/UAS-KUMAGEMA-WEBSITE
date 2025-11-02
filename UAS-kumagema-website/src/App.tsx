@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 
 interface Game {
   id: string;
@@ -38,12 +38,14 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isReady, setIsReady] = useState(false); 
-  const [searchTerm, setSearchTerm] = useState(''); // State baru untuk search
+  // [searchTerm, setSearchTermState] dan setSearchTerm DIHAPUS
 
   const navigate = useCallback((path: '/home' | '/games') => {
     window.history.pushState(null, '', path);
     setCurrentPath(path);
-  }, []);
+    // setSearchTermState(''); // Dihapus karena state tidak ada
+  }, []); 
+
 
   useEffect(() => {
     const handlePopState = () => {
@@ -131,7 +133,7 @@ const App: React.FC = () => {
   }, [currentPath, fetchGames, games.length]);
 
 
-  const HomePage: React.FC = () => {
+  const InnerHomePage: React.FC<{ games: Game[], isLoading: boolean, error: string | null, navigate: (path: '/home' | '/games') => void }> = React.memo(({ games, isLoading, error, navigate }) => {
     const recentGames = games.slice(0, 3); 
 
     return (
@@ -203,14 +205,16 @@ const App: React.FC = () => {
         )}
       </div>
     );
-  };
+  });
+  
+  const HomePage = () => <InnerHomePage games={games} isLoading={isLoading} error={error} navigate={navigate} />;
 
-  const GameCatalog: React.FC = () => {
-    // Logic filtering berdasarkan searchTerm
-    const filteredGames = games.filter(game =>
-        game.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        game.genre.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+
+  // InnerGameCatalog DIUBAH untuk tidak menerima searchTerm/setSearchTerm
+  const InnerGameCatalog: React.FC<{ games: Game[], isLoading: boolean, error: string | null }> = React.memo(({ games, isLoading, error }) => {
+    
+    // Logika filtering dihilangkan
+    const displayedGames = games; 
 
     if (isLoading) {
       return (
@@ -240,46 +244,28 @@ const App: React.FC = () => {
           Katalog Game KUMAGEMA
         </h2>
 
-        {/* Search Bar */}
-        <div className="max-w-xl mx-auto mb-10">
-            <div className="relative">
-                <input
-                    type="text"
-                    placeholder="Cari berdasarkan nama atau genre..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full px-5 py-3 text-kuma-light bg-gray-900 border border-gray-700 rounded-xl shadow-inner focus:ring-kuma-accent-cta focus:border-kuma-accent-cta outline-none transition duration-150"
-                />
-                <svg className="w-5 h-5 text-gray-500 absolute right-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-            </div>
-        </div>
+        {/* SearchBar Component DIHAPUS */}
 
-        {/* Display Filtered Results */}
-        {filteredGames.length === 0 && games.length > 0 && (
+        {/* Display Filtered Results DIUBAH */}
+        {displayedGames.length === 0 && (
             <div className="text-center p-10 text-gray-400 max-w-md mx-auto">
-                <h3 className="text-2xl font-bold mb-3">Tidak Ada Game Ditemukan</h3>
-                <p>Coba kata kunci lain atau periksa ejaan Anda.</p>
-            </div>
-        )}
-        
-        {games.length === 0 && !isLoading && !error && (
-            <div className="text-center p-10 text-gray-400 max-w-md mx-auto">
-                <h3 className="text-2xl font-bold mb-3">Katalog Kosong</h3>
+                <h3 className="2xl font-bold mb-3">Katalog Kosong</h3>
                 <p>Database kosong. Silakan isi data menggunakan `npm run studio` di terminal backend Anda.</p>
             </div>
         )}
 
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-          {filteredGames.map((game) => (
+          {displayedGames.map((game) => (
             <GameCard key={game.id} game={game} />
           ))}
         </div>
       </div>
     );
-  };
+  });
+
+  // GameCatalog DIUBAH untuk tidak menerima searchTerm/setSearchTerm
+  const GameCatalog = () => <InnerGameCatalog games={games} isLoading={isLoading} error={error} />;
 
   const HomeGameCard: React.FC<{ game: Game }> = ({ game }) => (
     <div className="bg-black rounded-xl shadow-lg overflow-hidden transition duration-300 hover:shadow-kuma-accent-cta/50 hover:scale-[1.05] cursor-pointer border border-gray-700"> 

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
-// --- DEFINISI TIPE DATA ---
 interface Game {
   id: string;
   title: string;
@@ -10,34 +9,29 @@ interface Game {
   imageUrl?: string; 
 }
 
-// --- DATA DUMMY PERUSAHAAN ---
 const COMPANY_NAME = 'KUMAGEMA';
 const COMPANY_TAGLINE = 'Menciptakan Dunia Baru, Satu Pixel dalam Satu Waktu.';
 const COMPANY_DESC = 
   `KUMAGEMA adalah studio pengembangan game independen yang bersemangat untuk menciptakan pengalaman interaktif yang unik dan mendalam. 
   Kami percaya pada kualitas di atas kuantitas, mendedikasikan diri untuk merancang gameplay yang menarik dan cerita yang tak terlupakan. 
   Jelajahi katalog kami dan temukan petualangan Anda berikutnya!`;
-// Menggunakan URL gambar yang stabil untuk logo
 const COMPANY_LOGO_URL = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_bskZ5xZEAgZz44CanARP_SzLKPOT9moQQA&s';
 
 
-// --- FUNGSI FORMAT HARGA ---
 const formatPrice = (price: number): string => { 
   if (price <= 0) {
     return "Gratis";
   }
-  // Format ke IDR (Indonesia Rupiah) tanpa menampilkan koma jika tidak ada desimal
   const formatted = price.toLocaleString('id-ID', {
     style: 'currency',
     currency: 'IDR',
     minimumFractionDigits: price % 1 === 0 ? 0 : 2,
     maximumFractionDigits: 2,
   });
-  return formatted.replace('IDR', 'Rp'); // Mengganti IDR dengan Rp (Prisma menggunakan Float)
+  return formatted.replace('IDR', 'Rp'); 
 };
 
 
-// --- KOMPONEN UTAMA ---
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<'home' | 'games'>('home');
   const [games, setGames] = useState<Game[]>([]);
@@ -45,7 +39,6 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isReady, setIsReady] = useState(false); 
 
-  // --- Memasukkan Script Tailwind CDN dan Konfigurasi di Mount ---
   useEffect(() => {
     const tailwindScript = document.createElement('script');
     tailwindScript.src = 'https://cdn.tailwindcss.com';
@@ -60,8 +53,8 @@ const App: React.FC = () => {
                         colors: {
                             'kuma-dark': '#1a1a1a', 
                             'kuma-light': '#f5f5f5', 
-                            'kuma-accent-cta': '#eab308', // Kuning sedang (yellow-500)
-                            'kuma-accent-cta-hover': '#d97706', // Kuning lebih gelap (yellow-600)
+                            'kuma-accent-cta': '#eab308', 
+                            'kuma-accent-cta-hover': '#d97706', 
                         },
                     },
                 },
@@ -81,7 +74,6 @@ const App: React.FC = () => {
     };
   }, []);
 
-  // --- FETCH DATA DARI API EXPRESS.JS ---
   const fetchGames = useCallback(async () => {
     setIsLoading(true);
     setError(null);
@@ -108,21 +100,18 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // Hanya fetch games jika pindah ke halaman games atau saat pertama kali di home jika ada bagian game di home
     if (currentPage === 'games' || (currentPage === 'home' && games.length === 0)) {
         fetchGames();
     }
   }, [currentPage, fetchGames, games.length]);
 
 
-  // --- KOMPONEN PAGE ---
-
   const HomePage: React.FC = () => {
-    const recentGames = games.slice(0, 3); // Ambil 3 game pertama
+    const recentGames = games.slice(0, 3); 
 
     return (
-      <div className="p-6 md:p-12 max-w-4xl mx-auto space-y-8 bg-black rounded-lg shadow-2xl"> {/* bg-gray-900 diganti bg-black */}
-        <h1 className="text-5xl font-extrabold text-kuma-accent-cta tracking-tight text-center">
+      <div className="p-6 md:p-12 max-w-4xl mx-auto space-y-8 bg-black rounded-lg shadow-2xl"> 
+        <h1 className="text-5xl font-extrabold text-kuma-light tracking-tight text-center"> 
           Selamat Datang di {COMPANY_NAME}
         </h1>
         <p className="text-xl font-medium text-gray-300 text-center italic">
@@ -145,7 +134,6 @@ const App: React.FC = () => {
               Lihat Games Kami!
             </h2>
             <div className="flex justify-center"> 
-                {/* Perbaikan: Menggunakan sm:grid-cols-2 agar 2 item berada di tengah dengan benar */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:max-w-xl">
                   {recentGames.map((game) => (
                     <HomeGameCard key={game.id} game={game} />
@@ -174,7 +162,7 @@ const App: React.FC = () => {
             </div>
         )}
 
-        {(isLoading && games.length === 0) && ( // Tampilkan loader jika fetching pertama kali
+        {(isLoading && games.length === 0) && ( 
              <div className="text-center p-10 text-gray-400">
                 <svg className="animate-spin h-8 w-8 text-kuma-accent-cta mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -238,9 +226,8 @@ const App: React.FC = () => {
     );
   };
 
-  // --- KOMPONEN CARD DI HALAMAN BERANDA (Hanya Gambar & Judul) ---
   const HomeGameCard: React.FC<{ game: Game }> = ({ game }) => (
-    <div className="bg-black rounded-xl shadow-lg overflow-hidden transition duration-300 hover:shadow-kuma-accent-cta/50 hover:scale-[1.05] cursor-pointer border border-gray-700"> {/* bg-gray-900 diganti bg-black */}
+    <div className="bg-black rounded-xl shadow-lg overflow-hidden transition duration-300 hover:shadow-kuma-accent-cta/50 hover:scale-[1.05] cursor-pointer border border-gray-700"> 
       <div className="h-40 overflow-hidden">
         <img
           src={game.imageUrl || 'https://placehold.co/600x400/374151/ffffff?text=KUMAGEMA'}
@@ -259,9 +246,8 @@ const App: React.FC = () => {
     </div>
   );
 
-  // --- KOMPONEN CARD DI HALAMAN GAMES (Full Detail) ---
   const GameCard: React.FC<{ game: Game }> = ({ game }) => (
-    <div className="bg-black rounded-xl shadow-lg overflow-hidden transition duration-300 hover:shadow-kuma-accent-cta/50 hover:scale-[1.02] border border-gray-700"> {/* bg-gray-900 diganti bg-black */}
+    <div className="bg-black rounded-xl shadow-lg overflow-hidden transition duration-300 hover:shadow-kuma-accent-cta/50 hover:scale-[1.02] border border-gray-700"> 
       <div className="h-48 overflow-hidden">
         <img
           src={game.imageUrl || 'https://placehold.co/600x400/374155/ffffff?text=KUMAGEMA'}
@@ -284,7 +270,7 @@ const App: React.FC = () => {
             {formatPrice(game.price)}
           </span>
           <button
-            onClick={() => console.log(`Attempting to buy ${game.title}`)} // Logika pembelian nyata akan diimplementasikan di sini
+            onClick={() => console.log(`Attempting to buy ${game.title}`)} 
             className="px-4 py-2 bg-kuma-accent-cta text-kuma-dark font-semibold rounded-lg shadow-md hover:bg-kuma-accent-cta-hover transition duration-200"
           >
             {game.price > 0 ? 'Beli Sekarang' : 'Dapatkan'}
@@ -306,19 +292,17 @@ const App: React.FC = () => {
     }
   };
   
-  // Jika styling belum dimuat, tampilkan loader yang sangat sederhana
   if (!isReady) {
     return (
-      // MENGGUNAKAN INLINE STYLE CSS MURNI UNTUK MENJAMIN CENTERING DI VIEWPORT
       <div 
         style={{ 
           backgroundColor: '#1a1a1a', 
-          width: '100vw', // Menggunakan Viewport Width
-          height: '100vh', // Menggunakan Viewport Height
+          width: '100vw', 
+          height: '100vh', 
           display: 'flex', 
           justifyContent: 'center', 
           alignItems: 'center', 
-          color: '#eab308', 
+          color: '#f5f5f5', 
           fontSize: '24px' 
         }} 
       >
@@ -328,12 +312,10 @@ const App: React.FC = () => {
   }
 
   return (
-    // PENTING: Menambahkan style global untuk reset CSS
     <>
       <style
         dangerouslySetInnerHTML={{
           __html: `
-            /* Reset CSS dasar untuk memastikan tampilan memenuhi window */
             html, body, #root { 
               height: 100%; 
               width: 100%; 
@@ -345,11 +327,10 @@ const App: React.FC = () => {
         }}
       />
       <div className="min-h-screen bg-kuma-dark font-sans text-kuma-light">
-        {/* Header / Navbar */}
-        <header className="bg-black shadow-md sticky top-0 z-10"> {/* bg-gray-900 diganti bg-black */}
+        <header className="bg-black shadow-md sticky top-0 z-10"> 
           <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-            <div className="flex items-center space-x-3"> {/* Container untuk Logo dan Nama */}
-              <img src={COMPANY_LOGO_URL} alt="KUMAGEMA Logo" className="h-8 w-8" /> {/* rounded-full Dihapus */}
+            <div className="flex items-center space-x-3"> 
+              <img src={COMPANY_LOGO_URL} alt="KUMAGEMA Logo" className="h-8 w-8" /> 
               <div className="text-2xl font-bold text-kuma-light tracking-wider">
                 {COMPANY_NAME}
               </div>
@@ -375,13 +356,11 @@ const App: React.FC = () => {
           </nav>
         </header>
 
-        {/* Main Content */}
         <main className="py-10">
           {renderPage()}
         </main>
 
-        {/* Footer */}
-        <footer className="bg-black border-t border-gray-700 mt-10"> {/* bg-gray-900 diganti bg-black */}
+        <footer className="bg-black border-t border-gray-700 mt-10"> 
           <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-gray-400">
             &copy; {new Date().getFullYear()} {COMPANY_NAME}. All Rights Reserved. 
           </div>

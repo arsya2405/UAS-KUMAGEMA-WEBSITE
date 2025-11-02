@@ -16,7 +16,7 @@ const COMPANY_TAGLINE = 'Menciptakan Dunia Baru, Satu Pixel dalam Satu Waktu.';
 const COMPANY_DESC = 
   `KUMAGEMA adalah studio pengembangan game independen yang bersemangat untuk menciptakan pengalaman interaktif yang unik dan mendalam. 
   Kami percaya pada kualitas di atas kuantitas, mendedikasikan diri untuk merancang gameplay yang menarik dan cerita yang tak terlupakan. 
-  Jelajahi katalog kami dan temukan petualangan Anda berikutnya.`;
+  Jelajahi katalog kami dan temukan petualangan Anda berikutnya!`;
 // Menggunakan URL gambar yang stabil untuk logo
 const COMPANY_LOGO_URL = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_bskZ5xZEAgZz44CanARP_SzLKPOT9moQQA&s';
 
@@ -121,7 +121,7 @@ const App: React.FC = () => {
     const recentGames = games.slice(0, 3); // Ambil 3 game pertama
 
     return (
-      <div className="p-6 md:p-12 max-w-4xl mx-auto space-y-8 bg-gray-900 rounded-lg shadow-2xl">
+      <div className="p-6 md:p-12 max-w-4xl mx-auto space-y-8 bg-black rounded-lg shadow-2xl"> {/* bg-gray-900 diganti bg-black */}
         <h1 className="text-5xl font-extrabold text-kuma-accent-cta tracking-tight text-center">
           Selamat Datang di {COMPANY_NAME}
         </h1>
@@ -240,7 +240,7 @@ const App: React.FC = () => {
 
   // --- KOMPONEN CARD DI HALAMAN BERANDA (Hanya Gambar & Judul) ---
   const HomeGameCard: React.FC<{ game: Game }> = ({ game }) => (
-    <div className="bg-gray-900 rounded-xl shadow-lg overflow-hidden transition duration-300 hover:shadow-kuma-accent-cta/50 hover:scale-[1.05] cursor-pointer border border-gray-700">
+    <div className="bg-black rounded-xl shadow-lg overflow-hidden transition duration-300 hover:shadow-kuma-accent-cta/50 hover:scale-[1.05] cursor-pointer border border-gray-700"> {/* bg-gray-900 diganti bg-black */}
       <div className="h-40 overflow-hidden">
         <img
           src={game.imageUrl || 'https://placehold.co/600x400/374151/ffffff?text=KUMAGEMA'}
@@ -261,7 +261,7 @@ const App: React.FC = () => {
 
   // --- KOMPONEN CARD DI HALAMAN GAMES (Full Detail) ---
   const GameCard: React.FC<{ game: Game }> = ({ game }) => (
-    <div className="bg-gray-900 rounded-xl shadow-lg overflow-hidden transition duration-300 hover:shadow-kuma-accent-cta/50 hover:scale-[1.02] border border-gray-700">
+    <div className="bg-black rounded-xl shadow-lg overflow-hidden transition duration-300 hover:shadow-kuma-accent-cta/50 hover:scale-[1.02] border border-gray-700"> {/* bg-gray-900 diganti bg-black */}
       <div className="h-48 overflow-hidden">
         <img
           src={game.imageUrl || 'https://placehold.co/600x400/374155/ffffff?text=KUMAGEMA'}
@@ -309,8 +309,11 @@ const App: React.FC = () => {
   // Jika styling belum dimuat, tampilkan loader yang sangat sederhana
   if (!isReady) {
     return (
-      <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <p style={{ color: '#eab308', fontSize: '24px' }}>Memuat Tampilan...</p>
+      <div 
+        style={{ backgroundColor: '#1a1a1a', width: '100%', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }} 
+        className="text-kuma-accent-cta text-2xl"
+      >
+        Memuat Tampilan...
       </div>
     );
   }
@@ -334,10 +337,10 @@ const App: React.FC = () => {
       />
       <div className="min-h-screen bg-kuma-dark font-sans text-kuma-light">
         {/* Header / Navbar */}
-        <header className="bg-gray-900 shadow-md sticky top-0 z-10">
+        <header className="bg-black shadow-md sticky top-0 z-10"> {/* bg-gray-900 diganti bg-black */}
           <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
             <div className="flex items-center space-x-3"> {/* Container untuk Logo dan Nama */}
-              <img src={COMPANY_LOGO_URL} alt="KUMAGEMA Logo" className="h-8 w-8 rounded-full" />
+              <img src={COMPANY_LOGO_URL} alt="KUMAGEMA Logo" className="h-8 w-8" /> {/* rounded-full Dihapus */}
               <div className="text-2xl font-bold text-kuma-light tracking-wider">
                 {COMPANY_NAME}
               </div>
@@ -369,7 +372,7 @@ const App: React.FC = () => {
         </main>
 
         {/* Footer */}
-        <footer className="bg-gray-900 border-t border-gray-700 mt-10">
+        <footer className="bg-black border-t border-gray-700 mt-10"> {/* bg-gray-900 diganti bg-black */}
           <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-gray-400">
             &copy; {new Date().getFullYear()} {COMPANY_NAME}. All Rights Reserved. 
           </div>
